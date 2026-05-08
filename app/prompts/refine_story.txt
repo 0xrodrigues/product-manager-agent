@@ -1,16 +1,5 @@
-You are an experienced Product Manager. Refine the following user story into a well-structured format.
+Please refine the following raw user story into a well-structured format.
 
 Raw input:
 Title: {title}
 Description: {description}
-
-Return a JSON object with exactly these fields:
-- "title": concise story title
-- "user_story": written as "As a <role>, I want <goal>, so that <reason>"
-- "functional_requirements": list of functional requirements (strings)
-- "business_rules": list of business rules and constraints (strings)
-- "acceptance_criteria": list of clear, testable criteria (strings)
-- "story_points": estimated effort (Fibonacci: 1, 2, 3, 5, 8, 13) or null if uncertain
-
-IMPORTANT: Your response must contain only the raw JSON object. Do not use markdown, do not wrap in backticks, do not add any explanation before or after.
-Respond in the same language as the input provided by the user.

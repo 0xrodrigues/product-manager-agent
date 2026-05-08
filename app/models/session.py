@@ -1,0 +1,24 @@
+from datetime import datetime, timezone
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+from app.models.story import RefinedStory
+
+
+class SessionMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class Session(BaseModel):
+    id: str
+    history: list[SessionMessage] = Field(default_factory=list)
+    last_refined_story: RefinedStory | None = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class SessionResponse(BaseModel):
+    session_id: str
+    refined_story: RefinedStory
+    message: str
