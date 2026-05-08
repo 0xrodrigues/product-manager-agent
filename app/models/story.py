@@ -13,6 +13,8 @@ class RefinedStory(BaseModel):
 
     title: str
     user_story: str = Field(..., description="As a <role>, I want <goal>, so that <reason>")
+    functional_requirements: list[str]
+    business_rules: list[str]
     acceptance_criteria: list[str]
     story_points: int | None = None
 
