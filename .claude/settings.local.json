@@ -13,7 +13,8 @@
       "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/memory/technical-documents)",
       "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/memory/technical-documentation)",
       "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/.claude/technical-documentation)",
-      "Bash(mv /Users/batman/workspace/product-manager-agent/memory/technical-documentation/DOC_TEMPLATE.md /Users/batman/workspace/product-manager-agent/.claude/technical-documentation/DOC_TEMPLATE.md)"
+      "Bash(mv /Users/batman/workspace/product-manager-agent/memory/technical-documentation/DOC_TEMPLATE.md /Users/batman/workspace/product-manager-agent/.claude/technical-documentation/DOC_TEMPLATE.md)",
+      "Bash(python -m pytest tests/test_api/test_routes.py -v)"
     ]
   }
 }
