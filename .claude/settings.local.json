@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(uv venv *)",
-      "Bash(uv pip *)"
+      "Bash(uv pip *)",
+      "Bash(python -c \"from app.api.routes import router; print\\('routes OK'\\)\")",
+      "Bash(python -c \"from app.agents.conversation_agent import ConversationAgent; print\\('agent OK'\\)\")",
+      "Bash(python -c \"from app.services.session_store import create_session, get_session, update_session, delete_session; print\\('session_store OK'\\)\")",
+      "Bash(python -c \"from app.models.session import Session, SessionMessage, SessionResponse; print\\('models OK'\\)\")",
+      "Bash(ls -la /Users/batman/workspace/product-manager-agent/.claude/ 2>/dev/null || echo \"No .claude directory\"; ls -la /Users/batman/.claude/commands/ 2>/dev/null || echo \"No user commands directory\")",
+      "Read(//Users/batman/.claude/**)",
+      "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/.claude/commands)",
+      "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/memory/technical-documents)",
+      "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/memory/technical-documentation)",
+      "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/.claude/technical-documentation)",
+      "Bash(mv /Users/batman/workspace/product-manager-agent/memory/technical-documentation/DOC_TEMPLATE.md /Users/batman/workspace/product-manager-agent/.claude/technical-documentation/DOC_TEMPLATE.md)"
     ]
   }
 }

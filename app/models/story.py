@@ -5,7 +5,7 @@ class RawStory(BaseModel):
     """Input: unrefined user story from the requester."""
 
     title: str = Field(..., description="Short title of the story")
-    description: str = Field(..., description="Free-form description of the need")
+    description: str = Field(..., description="Technical system dependencies: external APIs, services, tables or contract fields required from other teams")
 
 
 class RefinedStory(BaseModel):
@@ -16,6 +16,7 @@ class RefinedStory(BaseModel):
     functional_requirements: list[str]
     business_rules: list[str]
     acceptance_criteria: list[str]
+    dependencies: list[str]
     story_points: int | None = None
 
 
