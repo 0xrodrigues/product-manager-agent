@@ -1,110 +1,110 @@
-# Session Store — User Session Control
+# Session Store — Controle de Sessões de Usuário
 
-## Metadata
-- Creation date: 2026-05-08
-- Last update: 2026-05-08
-- Document version: 1.0.0
-- Main technical path: `app/services/session_store.py`
+## Metadados
+- Data de criação: 2026-05-08
+- Última atualização: 2026-05-08
+- Versão do documento: 1.0.0
+- Caminho técnico principal: `app/services/session_store.py`
 
-## Overview
-The session store is a lightweight in-memory service that manages conversational refinement sessions. Each session holds the full message history and the most recently refined user story, allowing the AI agent to maintain context across multiple HTTP requests from the same user.
+## Visão Geral
+O session store é um serviço leve em memória que gerencia sessões de refinamento conversacional. Cada sessão mantém o histórico completo de mensagens e a história refinada mais recente, permitindo que o agente de IA preserve contexto entre múltiplas requisições HTTP do mesmo usuário.
 
-## Scope
-- **Includes:** session lifecycle (create, read, update, delete), in-memory storage, data models for session and messages
-- **Does not include:** persistence to disk or database, session expiration/TTL, authentication or authorization, concurrency control
+## Escopo
+- **Inclui:** ciclo de vida da sessão (criar, ler, atualizar, deletar), armazenamento em memória, modelos de dados para sessão e mensagens.
+- **Não inclui:** persistência em disco ou banco de dados, expiração/TTL de sessão, autenticação ou autorização, controle de concorrência.
 
-## Components Involved
-- `app/services/session_store.py`: CRUD operations over a module-level dict
-- `app/models/session.py`: `Session`, `SessionMessage`, and `SessionResponse` Pydantic models
-- `app/models/story.py`: `RefinedStory` — stored as `session.last_refined_story`
-- `app/api/routes.py`: API layer that drives session lifecycle via HTTP endpoints
+## Componentes Envolvidos
+- `app/services/session_store.py`: operações CRUD sobre um dicionário de nível de módulo.
+- `app/models/session.py`: modelos Pydantic `Session`, `SessionMessage` e `SessionResponse`.
+- `app/models/story.py`: `RefinedStory` — armazenado como `session.last_refined_story`.
+- `app/api/routes.py`: camada de API que conduz o ciclo de vida da sessão via endpoints HTTP.
 
-## Execution Flow
+## Fluxo de Execução
 
-### Session creation (`POST /stories/session`)
-1. `session_store.create_session()` generates a UUID4, instantiates a `Session`, stores it in `_store`, and returns it.
-2. `ConversationAgent().start(session, raw)` runs the initial AI refinement and appends the first turn to `session.history`.
-3. `session_store.update_session(session)` writes the mutated session back to `_store`.
-4. API returns `SessionResponse` with `session_id`, `refined_story`, and the agent's opening `message`.
-5. On failure, `session_store.delete_session(session.id)` removes the orphaned session before raising HTTP 502.
+### Criação de sessão — `POST /stories/session`
+1. `session_store.create_session()` gera um UUID4, instancia uma `Session`, armazena em `_store` e a retorna.
+2. `ConversationAgent().start(session, raw)` executa o refinamento inicial pela IA e acrescenta o primeiro turno em `session.history`.
+3. `session_store.update_session(session)` escreve a sessão mutada de volta em `_store`.
+4. A API retorna `SessionResponse` com `session_id`, `refined_story` e a `message` de abertura do agente.
+5. Em caso de falha, `session_store.delete_session(session.id)` remove a sessão órfã antes de lançar HTTP 502.
 
-### Conversation turn (`POST /stories/session/{session_id}`)
-1. `session_store.get_session(session_id)` retrieves the session; returns `None` if absent → HTTP 404.
-2. `ConversationAgent().process(session, message)` appends the user message and the agent reply to `session.history` and updates `session.last_refined_story`.
-3. `session_store.update_session(session)` persists the updated session back to `_store`.
+### Turno de conversa — `POST /stories/session/{session_id}`
+1. `session_store.get_session(session_id)` recupera a sessão; retorna `None` se ausente → HTTP 404.
+2. `ConversationAgent().process(session, message)` acrescenta a mensagem do usuário e a resposta do agente em `session.history` e atualiza `session.last_refined_story`.
+3. `session_store.update_session(session)` persiste a sessão atualizada de volta em `_store`.
 
-### Confirmation (`POST /stories/session/{session_id}/confirm`)
-1. `session_store.get_session(session_id)` retrieves session; HTTP 404 if absent.
-2. HTTP 422 if `session.last_refined_story` is `None`.
-3. Jira ticket is created from `session.last_refined_story`.
-4. `session_store.delete_session(session_id)` removes the session — no further interaction is possible.
+### Confirmação — `POST /stories/session/{session_id}/confirm`
+1. `session_store.get_session(session_id)` recupera a sessão; HTTP 404 se ausente.
+2. HTTP 422 se `session.last_refined_story` for `None`.
+3. O ticket Jira é criado a partir de `session.last_refined_story`.
+4. `session_store.delete_session(session_id)` remove a sessão — nenhuma interação posterior é possível.
 
-### Discard (`DELETE /stories/session/{session_id}`)
-1. `session_store.get_session(session_id)` checks existence; HTTP 404 if absent.
-2. `session_store.delete_session(session_id)` removes the session without creating a ticket.
+### Descarte — `DELETE /stories/session/{session_id}`
+1. `session_store.get_session(session_id)` verifica existência; HTTP 404 se ausente.
+2. `session_store.delete_session(session_id)` remove a sessão sem criar ticket.
 
-## Data Contracts and Structures
+## Contratos de Dados e Estruturas
 
-### `Session` (Pydantic BaseModel — `app/models/session.py:14`)
-| Field | Type | Default | Description |
+### `Session` (Pydantic BaseModel — `app/models/session.py`)
+| Campo | Tipo | Padrão | Descrição |
 |---|---|---|---|
-| `id` | `str` | required | UUID4 string, used as store key |
-| `history` | `list[SessionMessage]` | `[]` | Ordered conversation turns |
-| `last_refined_story` | `RefinedStory \| None` | `None` | Latest AI-refined story |
-| `created_at` | `datetime` | `datetime.now(timezone.utc)` | UTC timestamp of session creation |
+| `id` | `str` | obrigatório | String UUID4, usada como chave no store |
+| `history` | `list[SessionMessage]` | `[]` | Turnos de conversa em ordem |
+| `last_refined_story` | `RefinedStory \| None` | `None` | Última história refinada pela IA |
+| `created_at` | `datetime` | `datetime.now(timezone.utc)` | Timestamp UTC de criação da sessão |
 
-### `SessionMessage` (Pydantic BaseModel — `app/models/session.py:9`)
-| Field | Type | Values |
+### `SessionMessage` (Pydantic BaseModel — `app/models/session.py`)
+| Campo | Tipo | Valores |
 |---|---|---|
-| `role` | `Literal["user", "assistant"]` | Identifies message author |
-| `content` | `str` | Raw text of the turn |
+| `role` | `Literal["user", "assistant"]` | Identifica o autor da mensagem |
+| `content` | `str` | Texto bruto do turno |
 
-### `SessionResponse` (API output — `app/models/session.py:22`)
-| Field | Type | Description |
+### `SessionResponse` (saída da API — `app/models/session.py`)
+| Campo | Tipo | Descrição |
 |---|---|---|
-| `session_id` | `str` | The session UUID returned to the client |
-| `refined_story` | `RefinedStory` | Current refined story after the turn |
-| `message` | `str` | Agent's conversational reply |
+| `session_id` | `str` | UUID da sessão retornado ao cliente |
+| `refined_story` | `RefinedStory` | História refinada atual após o turno |
+| `message` | `str` | Resposta conversacional do agente |
 
-### Internal store
-- **Type:** `dict[str, Session]` (`_store` module-level variable)
-- **Key:** `session.id` (UUID4 string)
-- **Scope:** single Python process; not shared across workers or restarts
+### Store interno
+- **Tipo:** `dict[str, Session]` (variável de nível de módulo `_store`)
+- **Chave:** `session.id` (string UUID4)
+- **Escopo:** processo Python único; não compartilhado entre workers ou reinicializações
 
-## Business Rules and Behavior
-- Every session starts with a unique UUID4 id; collisions are statistically negligible.
-- `get_session` returns `None` for unknown IDs — callers are responsible for raising HTTP 404.
-- `update_session` is a full replace (not a merge); the caller mutates the object in place and writes it back.
-- `delete_session` uses `dict.pop(key, None)` — silently no-ops if the key is absent.
-- Confirming a session (`/confirm`) deletes it immediately after ticket creation; the session cannot be reused.
-- A session deleted mid-conversation (e.g. via `DELETE`) leaves no trace; subsequent requests with that ID return 404.
+## Regras de Negócio e Comportamento
+- Cada sessão inicia com um UUID4 único; colisões são estatisticamente negligenciáveis.
+- `get_session` retorna `None` para IDs desconhecidos — os chamadores são responsáveis por lançar HTTP 404.
+- `update_session` é uma substituição completa (não merge); o chamador muta o objeto in-place e o escreve de volta.
+- `delete_session` usa `dict.pop(key, None)` — opera silenciosamente se a chave estiver ausente.
+- Confirmar uma sessão (`/confirm`) a deleta imediatamente após a criação do ticket; a sessão não pode ser reutilizada.
+- Uma sessão deletada durante a conversa (ex.: via `DELETE`) não deixa rastro; requisições subsequentes com esse ID retornam 404.
 
-## Error Handling
-- **Session not found:** `get_session` returns `None`; routes convert this to HTTP 404 before any agent call.
-- **No story to confirm:** routes raise HTTP 422 if `session.last_refined_story is None` before touching Jira.
-- **Agent failure on start:** the session is deleted before raising HTTP 502 to avoid orphaned sessions accumulating in `_store`.
-- The store itself raises no exceptions — all operations are safe by design (`dict.pop` with default, `dict.get`).
+## Tratamento de Erros
+- **Sessão não encontrada:** `get_session` retorna `None`; as rotas convertem para HTTP 404 antes de qualquer chamada ao agente.
+- **Sem história para confirmar:** as rotas lançam HTTP 422 se `session.last_refined_story is None` antes de acessar o Jira.
+- **Falha do agente na inicialização:** a sessão é deletada antes de lançar HTTP 502 para evitar acúmulo de sessões órfãs em `_store`.
+- O store em si não lança exceções — todas as operações são seguras por design (`dict.pop` com default, `dict.get`).
 
-## Integration with Project
-- `app/api/routes.py` is the sole consumer of `session_store`; it drives the full lifecycle.
-- `app/agents/conversation_agent.py` receives the `Session` object directly and mutates `history` and `last_refined_story` in place.
-- `app/integrations/jira.py` is called at confirmation time using data read from `session.last_refined_story`.
+## Integração com o Projeto
+- `app/api/routes.py` é o único consumidor do `session_store`; conduz o ciclo de vida completo.
+- `app/agents/conversation_agent.py` recebe o objeto `Session` diretamente e muta `history` e `last_refined_story` in-place.
+- `app/integrations/jira.py` é chamado no momento da confirmação com dados lidos de `session.last_refined_story`.
 
-## Current Limitations
-- **No persistence:** all sessions are lost when the server process restarts or crashes.
-- **Single-process only:** not safe for multi-worker deployments (e.g. `uvicorn --workers N` or gunicorn); each worker maintains an independent `_store`.
-- **No TTL or expiration:** abandoned sessions accumulate indefinitely for the lifetime of the process.
-- **No concurrency protection:** concurrent requests for the same session ID are not serialized; race conditions are possible under load.
-- **No session listing or inspection endpoint:** there is no admin API to enumerate or inspect active sessions.
+## Limitações Atuais
+- **Sem persistência:** todas as sessões são perdidas quando o processo do servidor reinicia ou cai.
+- **Apenas processo único:** não é seguro para deployments multi-worker (ex.: `uvicorn --workers N` ou gunicorn); cada worker mantém um `_store` independente.
+- **Sem TTL ou expiração:** sessões abandonadas acumulam indefinidamente durante a vida do processo.
+- **Sem proteção de concorrência:** requisições concorrentes para o mesmo `session_id` não são serializadas; race conditions são possíveis sob carga.
+- **Sem endpoint de listagem ou inspeção:** não existe API administrativa para enumerar ou inspecionar sessões ativas.
 
-## Recommended Evolution Points
-- Replace `_store` dict with a Redis-backed store to support persistence, multi-worker deployments, and built-in key TTL for automatic cleanup.
-- Add a session TTL (e.g. 30 minutes of inactivity) enforced either at the store level or via Redis expiry.
-- Introduce an async-safe lock (e.g. `asyncio.Lock` per session ID) if the API is migrated to async FastAPI handlers.
-- Add a `GET /stories/session/{session_id}` endpoint to allow clients to recover session state after a disconnect.
+## Pontos de Evolução Recomendados
+- Substituir o dicionário `_store` por um store com Redis para suportar persistência, deployments multi-worker e TTL nativo para limpeza automática.
+- Adicionar TTL de sessão (ex.: 30 minutos de inatividade) aplicado no nível do store ou via expiração do Redis.
+- Introduzir lock async-safe (ex.: `asyncio.Lock` por `session_id`) caso a API seja migrada para handlers assíncronos do FastAPI.
+- Adicionar endpoint `GET /stories/session/{session_id}` para permitir que clientes recuperem o estado da sessão após uma desconexão.
 
-## References
-- Source code: `app/services/session_store.py`
-- Session models: `app/models/session.py`
-- Story models: `app/models/story.py`
-- API routes: `app/api/routes.py`
+## Referências
+- Código-fonte: `app/services/session_store.py`
+- Modelos de sessão: `app/models/session.py`
+- Modelos de história: `app/models/story.py`
+- Rotas da API: `app/api/routes.py`

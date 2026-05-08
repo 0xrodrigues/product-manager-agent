@@ -1,49 +1,49 @@
-# [Document Title]
+# [Título do Documento]
 
-## Metadata
-- Creation date: YYYY-MM-DD
-- Last update: YYYY-MM-DD
-- Document version: X.Y.Z
-- Main technical path: `src/...`
+## Metadados
+- Data de criação: AAAA-MM-DD
+- Última atualização: AAAA-MM-DD
+- Versão do documento: X.Y.Z
+- Caminho técnico principal: `src/...`
 
-## Overview
-[2-4 sentences on module purpose]
+## Visão Geral
+[2 a 4 frases sobre o propósito do módulo]
 
-## Scope
-- **Includes:** ...
-- **Does not include:** ...
+## Escopo
+- **Inclui:** ...
+- **Não inclui:** ...
 
-## Components Involved
-- `file_or_module`: [role]
+## Componentes Envolvidos
+- `arquivo_ou_modulo`: [função]
 
-## Execution Flow
-1. [Initial step]
-2. [Intermediate step]
-3. [Final step]
+## Fluxo de Execução
+1. [Etapa inicial]
+2. [Etapa intermediária]
+3. [Etapa final]
 
-## Data Contracts and Structures
-- **Input:** [payload, parameters, preconditions]
-- **Output:** [expected result]
-- **Persisted/Memory State:** [where and how]
+## Contratos de Dados e Estruturas
+- **Entrada:** [payload, parâmetros, pré-condições]
+- **Saída:** [resultado esperado]
+- **Estado Persistido/Memória:** [onde e como]
 
-## Business Rules and Behavior
-- [Rule 1]
-- [Rule 2]
+## Regras de Negócio e Comportamento
+- [Regra 1]
+- [Regra 2]
 
-## Error Handling
-- [Error/Exception]: [when it happens and effect]
+## Tratamento de Erros
+- [Erro/Exceção]: [quando ocorre e qual o efeito]
 
-## Integration with Project
-- [How this module talks to other files/services]
+## Integração com o Projeto
+- [Como este módulo se comunica com outros arquivos/serviços]
 
-## Current Limitations
-- [Limitation 1]
-- [Limitation 2]
+## Limitações Atuais
+- [Limitação 1]
+- [Limitação 2]
 
-## Recommended Evolution Points
-- [Improvement 1]
-- [Improvement 2]
+## Pontos de Evolução Recomendados
+- [Melhoria 1]
+- [Melhoria 2]
 
-## References
-- Source code: `src/...`
-- Related documents: `memory/technical-documents/...`
+## Referências
+- Código-fonte: `src/...`
+- Documentos relacionados: `memory/technical-documents/...`

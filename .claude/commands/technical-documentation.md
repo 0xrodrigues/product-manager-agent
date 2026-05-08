@@ -1,35 +1,36 @@
 ---
-description: Generate and update standardized technical documentation with mandatory metadata (creation date, last update, version). Use when user requests technical documentation, technical explanations, or module/flow behavior analysis.
+description: Gera e atualiza documentação técnica padronizada com metadados obrigatórios (data de criação, última atualização, versão). Use quando o usuário solicitar documentação técnica, explicações técnicas ou análise de comportamento de módulos/fluxos.
 ---
 
-Generate or update a standardized technical document for: $ARGUMENTS
+Gere ou atualize um documento técnico padronizado para: $ARGUMENTS
 
-## Rules
+## Regras
 
-1. Save all documents to `docs/memory/technical-documents/` using kebab-case filenames (e.g., `session-manager.md`, `prompt-assembly-flow.md`)
-2. Use the template structure defined in `.claude/technical-documentation/DOC_TEMPLATE.md`
-3. Always include mandatory metadata:
-   - `Creation date`: today's date (YYYY-MM-DD) — keep original if updating
-   - `Last update`: today's date
-   - `Document version`: start at `1.0.0`; increment following semver on updates:
-     - `major`: large structural scope change
-     - `minor`: new sections or relevant behavior expansion
-     - `patch`: small adjustments, text corrections, or refinements
+1. Salve todos os documentos em `docs/memory/technical-documents/` usando nomes em kebab-case (ex.: `session-manager.md`, `prompt-assembly-flow.md`)
+2. Use a estrutura de template definida em `.claude/technical-documentation/DOC_TEMPLATE.md`
+3. Sempre inclua os metadados obrigatórios:
+   - `Data de criação`: data de hoje (AAAA-MM-DD) — mantenha a original ao atualizar
+   - `Última atualização`: data de hoje
+   - `Versão do documento`: inicie em `1.0.0`; incremente seguindo semver nas atualizações:
+     - `major`: grande mudança estrutural de escopo
+     - `minor`: novas seções ou expansão relevante de comportamento
+     - `patch`: pequenos ajustes, correções de texto ou refinamentos
 
-## Process
+## Processo
 
-1. Identify what needs documentation (file, module, flow, or service)
-2. Read the relevant source files thoroughly — understand actual behavior, not desired behavior
-3. Map components, inputs, outputs, and error cases
-4. Check if a doc already exists in `docs/memory/technical-documents/` — if yes, treat as update with version bump
-5. Fill the template with real behavior only (no speculation)
-6. Validate that all code references, endpoints, and models mentioned are accurate
-7. Write the final document to `docs/memory/technical-documents/<subject-name>.md`
+1. Identifique o que precisa ser documentado (arquivo, módulo, fluxo ou serviço)
+2. Leia os arquivos-fonte relevantes com atenção — entenda o comportamento real, não o desejado
+3. Mapeie componentes, entradas, saídas e casos de erro
+4. Verifique se já existe um documento em `docs/memory/technical-documents/` — se sim, trate como atualização com incremento de versão
+5. Preencha o template apenas com comportamento real (sem especulação)
+6. Valide que todas as referências de código, endpoints e modelos mencionados são precisas
+7. Escreva o documento final em `docs/memory/technical-documents/<nome-do-assunto>.md`
 
-## Key Constraints
+## Restrições Principais
 
-- **Location:** `docs/memory/technical-documents/` only
-- **Template:** Always follow `.claude/technical-documentation/DOC_TEMPLATE.md` structure
-- **Metadata:** Never omit creation date, last update, or version
-- **Accuracy:** Document actual behavior observed in code — not intended or speculative behavior
-- **Scope:** One focused topic per file
+- **Localização:** somente em `docs/memory/technical-documents/`
+- **Template:** sempre siga a estrutura de `.claude/technical-documentation/DOC_TEMPLATE.md`
+- **Metadados:** nunca omita data de criação, última atualização ou versão
+- **Precisão:** documente apenas o comportamento observado no código — não o comportamento pretendido ou especulativo
+- **Escopo:** um tópico focado por arquivo
+- **Idioma:** toda a documentação deve ser escrita em português
