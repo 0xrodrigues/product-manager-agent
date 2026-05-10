@@ -1,8 +1,8 @@
-import json
 import logging
 from pathlib import Path
 
 from app.agents.llm_client import LLMClient, LLMError
+from app.agents.parsing import parse_json_object
 from app.config import settings
 from app.models.session import Session, SessionMessage
 from app.models.story import RawStory, RefinedStory
@@ -19,39 +19,7 @@ def _build_initial_user_message(raw: RawStory) -> str:
 
 
 def _parse_conversation_response(response: str) -> tuple[RefinedStory, str]:
-    """Extract refined_story and message from the model JSON response."""
-    start = response.find("{")
-    if start < 0:
-        raise ValueError("No JSON object found in model response")
-
-    depth = 0
-    in_string = False
-    escape = False
-    end = -1
-    for i in range(start, len(response)):
-        ch = response[i]
-        if in_string:
-            if escape:
-                escape = False
-            elif ch == "\\":
-                escape = True
-            elif ch == '"':
-                in_string = False
-            continue
-        if ch == '"':
-            in_string = True
-        elif ch == "{":
-            depth += 1
-        elif ch == "}":
-            depth -= 1
-            if depth == 0:
-                end = i
-                break
-
-    if end < 0:
-        raise ValueError("Unbalanced JSON in model response")
-
-    raw_json = json.loads(response[start : end + 1])
+    raw_json = parse_json_object(response)
     story = RefinedStory(**raw_json["refined_story"])
     message = raw_json.get("message", "")
     return story, message

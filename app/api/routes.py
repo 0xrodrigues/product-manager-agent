@@ -4,9 +4,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.agents.conversation_agent import ConversationAgent
+from app.agents.interview_agent import InterviewAgent
 from app.config import settings
 from app.integrations.jira import JiraClient
-from app.models.session import SessionResponse
+from app.models.session import SessionPhase, SessionResponse
 from app.models.story import (
     JiraTicket,
     JiraTicketResponse,
@@ -38,34 +39,59 @@ def _build_jira_description(refined: RefinedStory) -> str:
 
 @router.post("/stories/session", response_model=SessionResponse)
 def create_session(raw: RawStory) -> SessionResponse:
-    """Start a conversational refinement session from a raw story."""
+    """Start an interview session from a raw story."""
     session = session_store.create_session()
     try:
-        story, message = ConversationAgent().start(session, raw)
+        result = InterviewAgent().start(session, raw)
     except ValueError as exc:
         session_store.delete_session(session.id)
-        logger.error("Initial refinement failed: %s", exc)
+        logger.error("Initial interview failed: %s", exc)
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     session_store.update_session(session)
-    return SessionResponse(session_id=session.id, refined_story=story, message=message)
+    return SessionResponse(
+        session_id=session.id,
+        phase=session.phase,
+        question=result.question,
+        suggestion=result.suggestion,
+        refined_story=result.refined_story,
+        message=result.message,
+    )
 
 
 @router.post("/stories/session/{session_id}", response_model=SessionResponse)
 def continue_session(session_id: str, body: _UserMessage) -> SessionResponse:
-    """Send a follow-up message to an existing refinement session."""
+    """Send a follow-up message to an existing session."""
     session = session_store.get_session(session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
 
     try:
-        story, message = ConversationAgent().process(session, body.message)
+        if session.phase == SessionPhase.INTERVIEWING:
+            result = InterviewAgent().process(session, body.message)
+            if result.phase == "refining":
+                session.phase = SessionPhase.REFINING
+            session_store.update_session(session)
+            return SessionResponse(
+                session_id=session.id,
+                phase=session.phase,
+                question=result.question,
+                suggestion=result.suggestion,
+                refined_story=result.refined_story,
+                message=result.message,
+            )
+        else:
+            story, message = ConversationAgent().process(session, body.message)
+            session_store.update_session(session)
+            return SessionResponse(
+                session_id=session.id,
+                phase=session.phase,
+                refined_story=story,
+                message=message,
+            )
     except ValueError as exc:
         logger.error("Conversation turn failed for session %s: %s", session_id, exc)
         raise HTTPException(status_code=502, detail=str(exc)) from exc
-
-    session_store.update_session(session)
-    return SessionResponse(session_id=session.id, refined_story=story, message=message)
 
 
 @router.post("/stories/session/{session_id}/confirm", response_model=RefineAndCreateResponse)

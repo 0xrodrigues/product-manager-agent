@@ -102,6 +102,23 @@ function appendAgentMessage(text, story) {
   scrollToBottom();
 }
 
+function appendInterviewMessage(question, suggestion) {
+  const prev = document.getElementById('artifact-trigger');
+  if (prev) prev.remove();
+
+  const el = document.createElement('div');
+  el.className = 'message agent';
+  el.innerHTML = `
+    <span class="message-label">PM Agent</span>
+    <div class="message-bubble">
+      ${escapeHtml(question)}
+      ${suggestion ? `<div class="interview-suggestion">${escapeHtml(suggestion)}</div>` : ''}
+    </div>
+  `;
+  messagesList.appendChild(el);
+  scrollToBottom();
+}
+
 function renderStoryCard(story, cardId) {
   const spLabel  = story.story_points != null ? `${story.story_points} pts` : '—';
   const frItems  = listItems(story.functional_requirements);
@@ -215,9 +232,14 @@ async function startSession(title, description) {
 
     removeTyping();
     sessionId = data.session_id;
-    lastStory = data.refined_story || null;
 
-    appendAgentMessage(data.message, lastStory);
+    if (data.phase === 'interviewing') {
+      lastStory = null;
+      appendInterviewMessage(data.question, data.suggestion);
+    } else {
+      lastStory = data.refined_story || null;
+      appendAgentMessage(data.message, lastStory);
+    }
     setStatus('online');
   } catch (err) {
     removeTyping();
@@ -253,9 +275,13 @@ async function continueSession(message) {
     const data = await res.json();
 
     removeTyping();
-    lastStory = data.refined_story || lastStory;
 
-    appendAgentMessage(data.message, lastStory);
+    if (data.phase === 'interviewing') {
+      appendInterviewMessage(data.question, data.suggestion);
+    } else {
+      lastStory = data.refined_story || lastStory;
+      appendAgentMessage(data.message, lastStory);
+    }
     setStatus('online');
   } catch (err) {
     removeTyping();

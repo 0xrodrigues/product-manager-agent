@@ -6,39 +6,10 @@ from openai import OpenAI
 from openai import OpenAIError
 from openai.types.chat import ChatCompletionMessageParam
 
+from app.agents.parsing import extract_json_str
 from app.models.story import RefinedStory
 
 _JSON_FENCE_START = re.compile(r"```\s*json\s*", re.IGNORECASE)
-
-
-def _first_balanced_json_object(text: str) -> Optional[str]:
-    """Return the first top-level JSON object in `text`, respecting strings and nesting."""
-    start = text.find("{")
-    if start < 0:
-        return None
-    depth = 0
-    in_string = False
-    escape = False
-    for i in range(start, len(text)):
-        ch = text[i]
-        if in_string:
-            if escape:
-                escape = False
-            elif ch == "\\":
-                escape = True
-            elif ch == '"':
-                in_string = False
-            continue
-        if ch == '"':
-            in_string = True
-            continue
-        if ch == "{":
-            depth += 1
-        elif ch == "}":
-            depth -= 1
-            if depth == 0:
-                return text[start : i + 1]
-    return None
 
 
 class LLMError(Exception):
@@ -91,7 +62,7 @@ class LLMClient:
         while True:
             m = _JSON_FENCE_START.search(response, pos)
             if not m:
-                raw = _first_balanced_json_object(response)
+                raw = extract_json_str(response)
                 if raw is None:
                     return None
                 try:
@@ -103,7 +74,7 @@ class LLMClient:
             if close < 0:
                 return None
             block = response[block_start:close].strip()
-            raw = _first_balanced_json_object(block)
+            raw = extract_json_str(block)
             if raw is None:
                 pos = close + 3
                 continue
