@@ -14,9 +14,9 @@ class JiraClient:
 
     def __init__(self) -> None:
         token = b64encode(
-            f"{settings.jira_user_email}:{settings.jira_api_token}".encode()
+            f"{settings.atlassian_user_email}:{settings.atlassian_api_token}".encode()
         ).decode()
-        self._base_url = settings.jira_base_url.rstrip("/")
+        self._base_url = settings.atlassian_base_url.rstrip("/")
         self._headers = {
             "Authorization": f"Basic {token}",
             "Content-Type": "application/json",

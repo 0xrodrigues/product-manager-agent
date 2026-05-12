@@ -7,11 +7,13 @@ class Settings(BaseSettings):
     llm_base_url: str
     llm_api_key: str
     llm_model: str
+    atlassian_base_url: str = ""
+    atlassian_user_email: str = ""
+    atlassian_api_token: str = ""
+    atlassian_ssl_verify: bool = True
     jira_enabled: bool = False
-    jira_base_url: str = ""
-    jira_user_email: str = ""
-    jira_api_token: str = ""
     jira_project_key: str = ""
+    confluence_enabled: bool = False
 
 
 settings = Settings()

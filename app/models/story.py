@@ -43,3 +43,30 @@ class RefineAndCreateResponse(BaseModel):
 
     refined_story: RefinedStory
     jira_ticket: JiraTicketResponse
+
+
+class ConfluencePage(BaseModel):
+    """Representa uma página a ser criada ou atualizada no Confluence."""
+
+    space_key: str
+    title: str
+    body: str
+    parent_id: str | None = None
+
+
+class ConfluencePageResponse(BaseModel):
+    """Resposta da API do Confluence após criação ou atualização de página."""
+
+    page_id: str
+    title: str
+    url: str
+    version: int
+
+
+class ConfluenceSearchResult(BaseModel):
+    """Item de resultado de busca no Confluence."""
+
+    page_id: str
+    title: str
+    space_key: str
+    url: str
