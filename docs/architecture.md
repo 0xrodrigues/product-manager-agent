@@ -11,8 +11,9 @@
 
 ## Project Structure
 - `app/api/` — FastAPI routers
-- `app/agents/` — AI agent logic
-- `app/integrations/` — external services (Jira, Confluence)
+- `app/agents/` — AI agent logic (business logic only)
+- `app/core/` — infrastructure utilities
+- `app/services/` — stateful services and external integrations
 - `app/prompts/` — prompt templates as plain strings or .txt files
 - `app/models/` — Pydantic models
 

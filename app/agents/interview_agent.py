@@ -3,8 +3,8 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from app.agents.llm_client import LLMClient, LLMError
-from app.agents.parsing import parse_json_object
+from app.core.llm import LLMClient, LLMError
+from app.core.parsing import parse_json_object
 from app.config import settings
 from app.models.session import Session, SessionMessage
 from app.models.story import RawStory, RefinedStory

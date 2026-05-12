@@ -6,7 +6,7 @@ from openai import OpenAI
 from openai import OpenAIError
 from openai.types.chat import ChatCompletionMessageParam
 
-from app.agents.parsing import extract_json_str
+from app.core.parsing import extract_json_str
 from app.models.story import RefinedStory
 
 _JSON_FENCE_START = re.compile(r"```\s*json\s*", re.IGNORECASE)
