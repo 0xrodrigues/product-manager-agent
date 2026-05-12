@@ -98,6 +98,7 @@ def confirm_session(session_id: str) -> RefineAndCreateResponse:
         project_key=settings.jira_project_key,
         summary=formatted.title,
         description=build_jira_description(formatted),
+        story_points=formatted.story_points,
     )
 
     if not settings.jira_enabled:

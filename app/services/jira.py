@@ -65,4 +65,6 @@ class JiraClient:
                 "issuetype": {"name": ticket.issue_type},
             }
         }
+        if ticket.story_points is not None:
+            payload["fields"][settings.jira_story_points_field] = ticket.story_points
         return payload

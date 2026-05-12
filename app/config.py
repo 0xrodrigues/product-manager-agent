@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     atlassian_ssl_verify: bool = True
     jira_enabled: bool = False
     jira_project_key: str = ""
+    jira_story_points_field: str = "story_points"
     confluence_enabled: bool = False
 
 
