@@ -10,12 +10,16 @@
 - Prefer explicit over implicit
 
 ## Project Structure
-- `app/api/` — FastAPI routers
+- `app/api/` — FastAPI routers (roteamento e orquestração de chamadas apenas — sem lógica de negócio)
 - `app/agents/` — AI agent logic (business logic only)
-- `app/core/` — infrastructure utilities
+- `app/core/` — infrastructure utilities and shared logic:
+  - `formatting.py` — funções de formatação de artefatos (numeração RF/RN/CA, montagem de descrições). Toda lógica de apresentação/transformação de dados reutilizável deve viver aqui.
 - `app/services/` — stateful services and external integrations
 - `app/prompts/` — prompt templates as plain strings or .txt files
 - `app/models/` — Pydantic models
+
+## Formatação de Artefatos
+Lógica de formatação e transformação de dados para apresentação (ex: prefixação RF/RN/CA, montagem de textos para Jira/Confluence) deve ser implementada em `app/core/formatting.py`. Esse módulo é agnóstico de destino (não importa se vai para Jira, Confluence ou resposta da API) e pode ser reutilizado por routers, services ou agents.
 
 ## Dependencies
 - Add every new dependency to `requirements.txt`

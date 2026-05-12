@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from app.agents.conversation_agent import ConversationAgent
 from app.agents.interview_agent import InterviewAgent
 from app.config import settings
+from app.core.formatting import build_jira_description, format_story
 from app.services.jira import JiraClient
 from app.models.session import SessionPhase, SessionResponse
 from app.models.story import (
@@ -13,7 +14,6 @@ from app.models.story import (
     JiraTicketResponse,
     RawStory,
     RefineAndCreateResponse,
-    RefinedStory,
 )
 from app.services import session_store
 
@@ -23,18 +23,6 @@ router = APIRouter()
 
 class _UserMessage(BaseModel):
     message: str
-
-
-def _build_jira_description(refined: RefinedStory) -> str:
-    return (
-        refined.user_story
-        + "\n\nFunctional Requirements:\n"
-        + "\n".join(f"- {fr}" for fr in refined.functional_requirements)
-        + "\n\nBusiness Rules:\n"
-        + "\n".join(f"- {br}" for br in refined.business_rules)
-        + "\n\nAcceptance Criteria:\n"
-        + "\n".join(f"- {ac}" for ac in refined.acceptance_criteria)
-    )
 
 
 @router.post("/stories/session", response_model=SessionResponse)
@@ -105,10 +93,11 @@ def confirm_session(session_id: str) -> RefineAndCreateResponse:
         raise HTTPException(status_code=422, detail="Session has no refined story to confirm")
 
     refined = session.last_refined_story
+    formatted = format_story(refined)
     ticket = JiraTicket(
         project_key=settings.jira_project_key,
-        summary=refined.title,
-        description=_build_jira_description(refined),
+        summary=formatted.title,
+        description=build_jira_description(formatted),
     )
 
     if not settings.jira_enabled:
@@ -126,7 +115,7 @@ def confirm_session(session_id: str) -> RefineAndCreateResponse:
             raise HTTPException(status_code=502, detail="Failed to create Jira ticket") from exc
 
     session_store.delete_session(session_id)
-    return RefineAndCreateResponse(refined_story=refined, jira_ticket=jira_response)
+    return RefineAndCreateResponse(refined_story=formatted, jira_ticket=jira_response)
 
 
 @router.delete("/stories/session/{session_id}", status_code=204)

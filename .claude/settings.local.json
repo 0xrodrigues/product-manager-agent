@@ -19,7 +19,9 @@
       "Bash(python -m pytest tests/ -v)",
       "Bash(python -c \"from app.agents.conversation_agent import ConversationAgent; from app.agents.interview_agent import InterviewAgent; from app.api.routes import router; print\\('Todos os imports OK'\\)\")",
       "Bash(python -c ' *)",
-      "Bash(grep -E \"^/Users/batman/workspace/product-manager-agent/[^/]+$\")"
+      "Bash(grep -E \"^/Users/batman/workspace/product-manager-agent/[^/]+$\")",
+      "Bash(python -c \"import task_manager; import json; t = task_manager.create_task\\('Numerar RF, RN e CA no artefato gerado para o Jira'\\); print\\(json.dumps\\(t\\)\\)\")",
+      "Bash(python -m pytest tests/ -x -q)"
     ],
     "additionalDirectories": [
       "/Users/batman/workspace/product-manager-agent/frontend"
