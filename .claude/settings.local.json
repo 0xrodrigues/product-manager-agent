@@ -15,7 +15,9 @@
       "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/.claude/technical-documentation)",
       "Bash(mv /Users/batman/workspace/product-manager-agent/memory/technical-documentation/DOC_TEMPLATE.md /Users/batman/workspace/product-manager-agent/.claude/technical-documentation/DOC_TEMPLATE.md)",
       "Bash(python -m pytest tests/test_api/test_routes.py -v)",
-      "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/frontend/css /Users/batman/workspace/product-manager-agent/frontend/js)"
+      "Bash(mkdir -p /Users/batman/workspace/product-manager-agent/frontend/css /Users/batman/workspace/product-manager-agent/frontend/js)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(python -c \"from app.agents.conversation_agent import ConversationAgent; from app.agents.interview_agent import InterviewAgent; from app.api.routes import router; print\\('Todos os imports OK'\\)\")"
     ],
     "additionalDirectories": [
       "/Users/batman/workspace/product-manager-agent/frontend"

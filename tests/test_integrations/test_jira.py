@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.integrations.jira import JiraClient
+from app.services.jira import JiraClient
 from app.models.story import JiraTicket
 
 
@@ -20,7 +20,7 @@ _JIRA_API_RESPONSE = {
 }
 
 
-@patch("app.integrations.jira.httpx.Client")
+@patch("app.services.jira.httpx.Client")
 def test_create_ticket_returns_response(mock_client_cls: MagicMock) -> None:
     mock_response = MagicMock()
     mock_response.json.return_value = _JIRA_API_RESPONSE

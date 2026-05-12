@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from app.agents.conversation_agent import ConversationAgent
 from app.agents.interview_agent import InterviewAgent
 from app.config import settings
-from app.integrations.jira import JiraClient
+from app.services.jira import JiraClient
 from app.models.session import SessionPhase, SessionResponse
 from app.models.story import (
     JiraTicket,
