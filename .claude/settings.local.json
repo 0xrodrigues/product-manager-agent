@@ -21,7 +21,18 @@
       "Bash(python -c ' *)",
       "Bash(grep -E \"^/Users/batman/workspace/product-manager-agent/[^/]+$\")",
       "Bash(python -c \"import task_manager; import json; t = task_manager.create_task\\('Numerar RF, RN e CA no artefato gerado para o Jira'\\); print\\(json.dumps\\(t\\)\\)\")",
-      "Bash(python -m pytest tests/ -x -q)"
+      "Bash(python -m pytest tests/ -x -q)",
+      "Bash(python3 -m venv .venv)",
+      "Bash(which python3.11 python3.12 python3.13 2>/dev/null; ls /usr/local/bin/python* /opt/homebrew/bin/python* 2>/dev/null)",
+      "Read(//usr/local/bin/**)",
+      "Bash(/opt/homebrew/bin/python3.12 -m venv .venv)",
+      "Bash(pip index *)",
+      "Bash(/opt/homebrew/bin/python3.14 -m pip index versions pydantic-core)",
+      "Bash(/opt/homebrew/bin/python3.14 -m pip index versions pydantic)",
+      "Bash(/opt/homebrew/bin/python3.14 -m pip index versions pydantic-settings)",
+      "Bash(pkill -f \"uvicorn app.main\")",
+      "Bash(/opt/homebrew/bin/python3.14 -m venv .venv)",
+      "Bash(xargs kill -9)"
     ],
     "additionalDirectories": [
       "/Users/batman/workspace/product-manager-agent/frontend"
