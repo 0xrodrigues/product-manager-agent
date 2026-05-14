@@ -5,6 +5,7 @@
 - If something goes sideways, STOP and re-plan immediately - dont keep pushing
 - Use plan mode for verification steps, not just building 
 - Write detailed spec upfront to reduce ambiguity
+- Save every plan produced in plan mode to `/docs/plans/<kebab-case-title>.md` before exiting plan mode
 
 ## Subagent Strategy
 - Use subagents liberally to keep main context window clean
