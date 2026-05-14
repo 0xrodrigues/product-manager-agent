@@ -5,17 +5,11 @@ from app.core.llm import LLMClient, LLMError
 from app.core.parsing import parse_json_object
 from app.config import settings
 from app.models.session import Session, SessionMessage
-from app.models.story import RawStory, RefinedStory
+from app.models.story import RefinedStory
 
 logger = logging.getLogger(__name__)
 
 _SYSTEM_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "conversation_system.txt"
-_REFINE_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "refine_story.txt"
-
-
-def _build_initial_user_message(raw: RawStory) -> str:
-    template = _REFINE_PROMPT_PATH.read_text(encoding="utf-8")
-    return template.format(title=raw.title, description=raw.description)
 
 
 def _parse_conversation_response(response: str) -> tuple[RefinedStory, str]:
@@ -50,7 +44,7 @@ class ConversationAgent:
         logger.info("Processing conversation turn for session %s", session.id)
 
         try:
-            response = self._llm.complete(messages=messages, system=self._system_prompt)
+            response = self._llm.complete(messages=messages, system=self._system_prompt, temperature=0.1)
         except LLMError as exc:
             logger.error("LLM call failed for session %s: %s", session.id, exc)
             raise ValueError(str(exc)) from exc
@@ -64,8 +58,3 @@ class ConversationAgent:
         session.history.append(SessionMessage(role="assistant", content=response))
         session.last_refined_story = story
         return story, message
-
-    def start(self, session: Session, raw: RawStory) -> tuple[RefinedStory, str]:
-        """Bootstrap a new session with the initial raw story."""
-        initial_message = _build_initial_user_message(raw)
-        return self.process(session, initial_message)

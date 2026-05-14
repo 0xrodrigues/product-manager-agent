@@ -62,7 +62,7 @@ class InterviewAgent:
         logger.info("Processing interview turn for session %s", session.id)
 
         try:
-            response = self._llm.complete(messages=messages, system=self._system_prompt)
+            response = self._llm.complete(messages=messages, system=self._system_prompt, temperature=0.1)
         except LLMError as exc:
             logger.error("LLM call failed for session %s: %s", session.id, exc)
             raise ValueError(str(exc)) from exc
