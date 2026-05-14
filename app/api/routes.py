@@ -21,6 +21,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+@router.get("/health", status_code=200)
+def health_check() -> dict:
+    return {"status": "ok"}
+
+
 class _UserMessage(BaseModel):
     message: str
 

@@ -24,10 +24,10 @@ function setStatus(state) {
 
 async function checkHealth() {
   try {
-    await fetch(`${API_BASE}/stories/session`, { method: 'HEAD' }).catch(() => null);
-    setStatus('online');
+    const res = await fetch(`${API_BASE}/health`);
+    setStatus(res.ok ? 'online' : 'error');
   } catch {
-    setStatus('online');
+    setStatus('error');
   }
 }
 
